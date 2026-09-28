@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
+  Megaphone,
   Users,
   Radio,
   Sparkles,
@@ -13,6 +14,7 @@ import { cn } from "@/lib/utils";
 const links = [
   { href: "/", label: "Overview", icon: LayoutDashboard },
   { href: "/creators", label: "Creators", icon: Users },
+  { href: "/campaigns", label: "Campaigns", icon: Megaphone },
 ];
 
 export function Sidebar() {
