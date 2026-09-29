@@ -1,0 +1,75 @@
+{
+  "creators": [
+    {
+      "id": "creator-001",
+      "name": "Maya Chen",
+      "handle": "@mayamakes",
+      "avatar": "https://i.pravatar.cc/240?img=47",
+      "followers": 428000,
+      "engagementRate": 4.8,
+      "category": "Beauty"
+    },
+    {
+      "id": "creator-002",
+      "name": "Jordan Ellis",
+      "handle": "@jordaneats",
+      "avatar": "https://i.pravatar.cc/240?img=12",
+      "followers": 186000,
+      "engagementRate": 6.2,
+      "category": "Food"
+    },
+    {
+      "id": "creator-003",
+      "name": "Sofia Ramirez",
+      "handle": "@sofiastyles",
+      "avatar": "https://i.pravatar.cc/240?img=44",
+      "followers": 735000,
+      "engagementRate": 3.9,
+      "category": "Fashion"
+    },
+    {
+      "id": "creator-004",
+      "name": "Theo Brooks",
+      "handle": "@theobuilds",
+      "avatar": "https://i.pravatar.cc/240?img=60",
+      "followers": 294000,
+      "engagementRate": 5.4,
+      "category": "Technology"
+    }
+  ],
+  "campaigns": [
+    {
+      "id": "campaign-001",
+      "name": "Glow Into Summer",
+      "brand": "Luma Beauty",
+      "status": "active",
+      "startDate": "2026-06-01",
+      "endDate": "2026-07-15",
+      "budget": 45000,
+      "spent": 28750,
+      "creatorIds": ["creator-001", "creator-003"]
+    },
+    {
+      "id": "campaign-002",
+      "name": "Made for Weeknights",
+      "brand": "Good Table",
+      "status": "completed",
+      "startDate": "2026-03-10",
+      "endDate": "2026-04-20",
+      "budget": 32000,
+      "spent": 31200,
+      "creatorIds": ["creator-002"]
+    },
+    {
+      "id": "campaign-003",
+      "name": "Build Better",
+      "brand": "Northstar Tech",
+      "status": "planned",
+      "startDate": "2026-10-01",
+      "endDate": "2026-11-15",
+      "budget": 60000,
+      "spent": 0,
+      "creatorIds": ["creator-004"]
+    }
+  ]
+}
