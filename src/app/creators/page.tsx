@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { unstable_rethrow } from "next/navigation";
 import { AddCreatorModal } from "@/components/creator/AddCreatorModal";
 import type { Creator } from "@/types";
 
@@ -40,6 +41,7 @@ async function getCreators(): Promise<{ creators: Creator[]; error: boolean }> {
 
     return { creators: result, error: false };
   } catch (error) {
+    unstable_rethrow(error);
     console.error("Unable to fetch creators:", error);
     return { creators: [], error: true };
   }
