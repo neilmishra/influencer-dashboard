@@ -1,5 +1,7 @@
 import Image from "next/image";
+import Link from "next/link";
 import { unstable_rethrow } from "next/navigation";
+import { headers } from "next/headers";
 import { AddCreatorModal } from "@/components/creator/AddCreatorModal";
 import type { Creator } from "@/types";
 
@@ -28,8 +30,11 @@ function isCreator(value: unknown): value is Creator {
 
 async function getCreators(): Promise<{ creators: Creator[]; error: boolean }> {
   try {
+    const requestHeaders = await headers();
+    const cookie = requestHeaders.get("cookie");
     const response = await fetch(`${apiBaseUrl.replace(/\/$/, "")}/api/creators`, {
       cache: "no-store",
+      headers: cookie ? { cookie } : undefined,
     });
 
     if (!response.ok) throw new Error(`Creator API returned ${response.status}`);
@@ -99,7 +104,14 @@ export default async function CreatorsPage() {
                     className="h-[52px] w-[52px] rounded-full border border-slate-700 object-cover"
                   />
                   <div className="min-w-0">
-                    <h2 className="truncate text-base font-semibold text-white">{creator.name}</h2>
+                    <h2 className="truncate text-base font-semibold">
+                      <Link
+                        href={`/p/${creator.handle}`}
+                        className="text-white transition-colors hover:text-cyan-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400"
+                      >
+                        {creator.name}
+                      </Link>
+                    </h2>
                     <p className="truncate text-sm text-slate-400">{creator.handle}</p>
                   </div>
                 </div>

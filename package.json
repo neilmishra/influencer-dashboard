@@ -2,6 +2,9 @@
   "name": "influencer-dashboard",
   "version": "0.1.0",
   "private": true,
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -41,6 +44,8 @@
     "prisma": "^8.0.0-rc.17",
     "prisma-orm": "npm:prisma@^7.10.0",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }

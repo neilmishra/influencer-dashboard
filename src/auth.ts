@@ -1,6 +1,9 @@
 import NextAuth, { type DefaultSession } from "next-auth";
 import type { JWT } from "next-auth/jwt";
 import Credentials from "next-auth/providers/credentials";
+import FacebookProvider from "next-auth/providers/facebook";
+import GoogleProvider from "next-auth/providers/google";
+import TikTokProvider from "next-auth/providers/tiktok";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import type { UserRole } from "@/generated/prisma/enums";
@@ -30,6 +33,35 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      authorization: {
+        params: {
+          scope: "openid email profile https://www.googleapis.com/auth/youtube.readonly",
+          access_type: "offline",
+          prompt: "consent",
+        },
+      },
+    }),
+    FacebookProvider({
+      clientId: process.env.META_CLIENT_ID ?? "",
+      clientSecret: process.env.META_CLIENT_SECRET ?? "",
+      authorization: {
+        params: {
+          scope: "public_profile,email,instagram_basic,instagram_manage_insights",
+        },
+      },
+    }),
+    TikTokProvider({
+      clientId: process.env.TIKTOK_CLIENT_ID ?? "",
+      clientSecret: process.env.TIKTOK_CLIENT_SECRET ?? "",
+      authorization: {
+        params: {
+          scope: "user.info.basic,video.list",
+        },
+      },
+    }),
     Credentials({
       credentials: {
         email: { label: "Email", type: "email" },

@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { DashboardProvider } from "@/context/DashboardContext";
-import { FilterBar } from "@/components/layout/FilterBar";
-import { Sidebar } from "@/components/layout/Sidebar";
-import { Topbar } from "@/components/layout/Topbar";
+import { auth } from "@/auth";
+import { AppShell } from "@/components/layout/AppShell";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -22,23 +20,16 @@ export const metadata: Metadata = {
     "Track creator performance, campaign ROI, EMV, and audience demographics across Instagram, YouTube, and TikTok.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const session = await auth();
+
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-background text-foreground">
-        <DashboardProvider>
-          <div className="flex min-h-full">
-            <Sidebar />
-            <div className="flex min-h-screen min-w-0 flex-1 flex-col">
-              <Topbar />
-              <FilterBar />
-              <main className="flex-1 px-4 py-6 lg:px-8">{children}</main>
-            </div>
-          </div>
-        </DashboardProvider>
+        <AppShell user={session?.user ?? null}>{children}</AppShell>
       </body>
     </html>
   );

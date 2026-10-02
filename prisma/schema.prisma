@@ -25,6 +25,8 @@ model User {
   brandProfile    BrandProfile?
   accounts        Account[]
   sessions        Session[]
+  campaigns       Campaign[]
+  campaignApplications CampaignApplication[]
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 }
@@ -35,6 +37,15 @@ model CreatorProfile {
   handle    String   @unique
   category  String
   followers Int      @default(0)
+  engagementRate Float @default(0)
+  bioSummary String?  @db.Text
+  publicContactEmail String? @db.VarChar(254)
+  youtubeFollowers Int?
+  youtubeAverageViews Int?
+  instagramFollowers Int?
+  instagramAverageEngagementRate Float?
+  tiktokFollowers Int?
+  tiktokAverageLikes Int?
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -82,4 +93,36 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Campaign {
+  id           String   @id @default(cuid())
+  companyName  String
+  title        String
+  description  String   @db.VarChar(280)
+  niche        String
+  platforms    String[]
+  minFollowers Int
+  budgetRange  String
+  location     String
+  isPremium    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  applications CampaignApplication[]
+
+  @@index([isPremium, createdAt])
+}
+
+model CampaignApplication {
+  id         String   @id @default(cuid())
+  campaignId String
+  userId     String
+  status     String   @default("PENDING")
+  createdAt  DateTime @default(now())
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([campaignId, userId])
+  @@index([userId, createdAt])
 }

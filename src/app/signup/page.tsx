@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useSyncExternalStore, type FormEvent } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -42,9 +42,29 @@ function errorMessage(value: unknown): string | null {
   return null;
 }
 
+function subscribeToLocation(onChange: () => void) {
+  window.addEventListener("popstate", onChange);
+  return () => window.removeEventListener("popstate", onChange);
+}
+
+function getAdminQuerySnapshot() {
+  return new URLSearchParams(window.location.search).get("admin") === "true";
+}
+
+function getServerAdminQuerySnapshot() {
+  return false;
+}
+
 export default function SignupPage() {
   const router = useRouter();
   const [role, setRole] = useState<SignupRole>("CREATOR");
+  const adminQueryActive = useSyncExternalStore(
+    subscribeToLocation,
+    getAdminQuerySnapshot,
+    getServerAdminQuerySnapshot,
+  );
+  const [adminLoginOpened, setAdminLoginOpened] = useState(false);
+  const isAdminLogin = adminQueryActive || adminLoginOpened;
   const [form, setForm] = useState<SignupForm>(initialForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -112,11 +132,39 @@ export default function SignupPage() {
     }
   }
 
+  async function handleAdminLogin(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    setIsSubmitting(true);
+
+    try {
+      const result = await signIn("credentials", {
+        email: form.email.trim().toLowerCase(),
+        password: form.password,
+        redirect: false,
+        callbackUrl: "/",
+      });
+
+      if (!result?.ok || result.error) {
+        setError("Invalid email or password.");
+        return;
+      }
+
+      setForm(initialForm);
+      router.replace(result.url ?? "/");
+      router.refresh();
+    } catch {
+      setError("Unable to sign in right now. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   const inputClassName =
     "h-11 w-full border border-slate-700 bg-slate-900/80 px-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-cyan-300 focus:ring-1 focus:ring-cyan-300";
 
   return (
-    <main className="-mx-4 -my-6 flex min-h-[calc(100vh-8rem)] items-center justify-center overflow-hidden bg-[radial-gradient(ellipse_at_top_right,rgba(34,211,238,0.12),transparent_38%)] bg-slate-950 px-4 py-10 text-slate-100 sm:px-6 lg:-mx-8 lg:px-8">
+    <main className="relative flex min-h-dvh w-full items-center justify-center overflow-hidden bg-[radial-gradient(ellipse_at_top_right,rgba(34,211,238,0.12),transparent_38%)] bg-slate-950 px-4 py-10 text-slate-100 sm:px-6">
       <section className="w-full max-w-xl">
         <div className="mb-7 flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center border border-cyan-300/30 bg-cyan-300/10 text-cyan-200">
@@ -132,12 +180,15 @@ export default function SignupPage() {
 
         <div className="border border-slate-800 bg-slate-950/80 p-5 sm:p-8">
           <header>
-            <h1 className="text-2xl font-semibold text-white">Create your account</h1>
+            <h1 className="text-2xl font-semibold text-white">
+              {isAdminLogin ? "Admin Login" : "Create your account"}
+            </h1>
             <p className="mt-2 text-sm text-slate-400">
-              Set up your profile to join the network.
+              {isAdminLogin ? "Sign in with your existing credentials." : "Set up your profile to join the network."}
             </p>
           </header>
 
+          {!isAdminLogin ? (
           <div className="mt-6 grid grid-cols-2 border border-slate-800 bg-slate-900/70 p-1" role="tablist" aria-label="Account type">
             <button
               id="creator-tab"
@@ -170,8 +221,39 @@ export default function SignupPage() {
               Are you a Brand?
             </button>
           </div>
+          ) : null}
 
-          <form id="signup-form" onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <form id="signup-form" onSubmit={isAdminLogin ? handleAdminLogin : handleSubmit} className="mt-6 space-y-4">
+            {isAdminLogin ? (
+              <>
+                <label className="block space-y-1.5 text-sm font-medium text-slate-200">
+                  Email address
+                  <input
+                    required
+                    type="email"
+                    maxLength={254}
+                    autoComplete="username"
+                    value={form.email}
+                    onChange={(event) => updateField("email", event.target.value)}
+                    className={inputClassName}
+                    placeholder="admin@dashboard.com"
+                  />
+                </label>
+                <label className="block space-y-1.5 text-sm font-medium text-slate-200">
+                  Password
+                  <input
+                    required
+                    type="password"
+                    autoComplete="current-password"
+                    value={form.password}
+                    onChange={(event) => updateField("password", event.target.value)}
+                    className={inputClassName}
+                    placeholder="Your password"
+                  />
+                </label>
+              </>
+            ) : (
+            <>
             <label className="block space-y-1.5 text-sm font-medium text-slate-200">
               Your name
               <input
@@ -284,6 +366,8 @@ export default function SignupPage() {
                 </label>
               </div>
             )}
+            </>
+            )}
 
             {error ? (
               <p role="alert" className="border border-rose-900 bg-rose-950/50 px-3 py-2 text-sm text-rose-200">
@@ -291,7 +375,7 @@ export default function SignupPage() {
               </p>
             ) : null}
 
-            {accountCreated && error ? (
+            {!isAdminLogin && accountCreated && error ? (
               <Link
                 href="/api/auth/signin"
                 className="inline-flex items-center gap-1 text-sm font-medium text-cyan-300 hover:text-cyan-200"
@@ -311,7 +395,7 @@ export default function SignupPage() {
                   Creating account...
                 </>
               ) : (
-                "Create account"
+                isAdminLogin ? "Sign in" : "Create account"
               )}
             </button>
           </form>
@@ -322,13 +406,36 @@ export default function SignupPage() {
           </div>
         </div>
 
-        <p className="mt-5 text-center text-sm text-slate-400">
-          Already have an account?{" "}
-          <Link href="/api/auth/signin" className="font-medium text-cyan-300 hover:text-cyan-200">
-            Sign in
-          </Link>
-        </p>
+        {isAdminLogin ? (
+          <p className="mt-5 text-center text-sm text-slate-400">
+            Need an account?{" "}
+            <button
+              type="button"
+              onClick={() => {
+                setAdminLoginOpened(false);
+                setError(null);
+                if (adminQueryActive) window.location.replace("/signup");
+              }}
+              className="font-medium text-cyan-300 hover:text-cyan-200"
+            >
+              Create an account
+            </button>
+          </p>
+        ) : null}
       </section>
+      {!isAdminLogin ? (
+        <footer className="absolute bottom-3 right-4">
+          <button
+            type="button"
+            aria-label="Open existing credential sign-in"
+            title="Open sign-in"
+            onClick={() => setAdminLoginOpened(true)}
+            className="text-[9px] text-slate-500/35 transition-colors hover:text-slate-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+          >
+            v1.0.0
+          </button>
+        </footer>
+      ) : null}
     </main>
   );
 }
