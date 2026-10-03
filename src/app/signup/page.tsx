@@ -2,9 +2,10 @@
 
 import { useState, useSyncExternalStore, type FormEvent } from "react";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, LoaderCircle, ShieldCheck, Sparkles } from "lucide-react";
+import { dashboardRouteForRole } from "@/lib/auth-routes";
 
 type SignupRole = "CREATOR" | "BRAND";
 
@@ -55,9 +56,24 @@ function getServerAdminQuerySnapshot() {
   return false;
 }
 
+function getSignupRoleSnapshot(): SignupRole | null {
+  const role = new URLSearchParams(window.location.search).get("role");
+  return role === "CREATOR" || role === "BRAND" ? role : null;
+}
+
+function getServerSignupRoleSnapshot(): SignupRole | null {
+  return null;
+}
+
 export default function SignupPage() {
   const router = useRouter();
-  const [role, setRole] = useState<SignupRole>("CREATOR");
+  const [roleOverride, setRoleOverride] = useState<SignupRole | null>(null);
+  const signupRoleFromQuery = useSyncExternalStore(
+    subscribeToLocation,
+    getSignupRoleSnapshot,
+    getServerSignupRoleSnapshot,
+  );
+  const role = roleOverride ?? signupRoleFromQuery ?? "CREATOR";
   const adminQueryActive = useSyncExternalStore(
     subscribeToLocation,
     getAdminQuerySnapshot,
@@ -122,8 +138,9 @@ export default function SignupPage() {
         return;
       }
 
+      const session = await getSession();
       setForm(initialForm);
-      router.replace("/");
+      router.replace(session?.user?.role ? dashboardRouteForRole(session.user.role) : "/");
       router.refresh();
     } catch {
       setError("Could not reach the signup service. Check your connection and try again.");
@@ -142,7 +159,6 @@ export default function SignupPage() {
         email: form.email.trim().toLowerCase(),
         password: form.password,
         redirect: false,
-        callbackUrl: "/",
       });
 
       if (!result?.ok || result.error) {
@@ -150,8 +166,9 @@ export default function SignupPage() {
         return;
       }
 
+  const session = await getSession();
       setForm(initialForm);
-      router.replace(result.url ?? "/");
+  router.replace(session?.user?.role ? dashboardRouteForRole(session.user.role) : "/");
       router.refresh();
     } catch {
       setError("Unable to sign in right now. Please try again.");
@@ -172,7 +189,7 @@ export default function SignupPage() {
           </div>
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300">
-              Pulseboard
+              xCollab
             </p>
             <p className="mt-0.5 text-sm text-slate-400">Creator and brand network</p>
           </div>
@@ -196,7 +213,7 @@ export default function SignupPage() {
               role="tab"
               aria-selected={role === "CREATOR"}
               aria-controls="signup-form"
-              onClick={() => setRole("CREATOR")}
+              onClick={() => setRoleOverride("CREATOR")}
               className={`min-h-10 px-3 text-sm font-medium transition ${
                 role === "CREATOR"
                   ? "bg-cyan-300 text-slate-950"
@@ -211,7 +228,7 @@ export default function SignupPage() {
               role="tab"
               aria-selected={role === "BRAND"}
               aria-controls="signup-form"
-              onClick={() => setRole("BRAND")}
+              onClick={() => setRoleOverride("BRAND")}
               className={`min-h-10 px-3 text-sm font-medium transition ${
                 role === "BRAND"
                   ? "bg-cyan-300 text-slate-950"
@@ -377,7 +394,7 @@ export default function SignupPage() {
 
             {!isAdminLogin && accountCreated && error ? (
               <Link
-                href="/api/auth/signin"
+                href="/login"
                 className="inline-flex items-center gap-1 text-sm font-medium text-cyan-300 hover:text-cyan-200"
               >
                 Continue to sign in <ArrowRight aria-hidden="true" className="h-4 w-4" />
@@ -404,6 +421,14 @@ export default function SignupPage() {
             <ShieldCheck aria-hidden="true" className="h-4 w-4 text-emerald-400" />
             Passwords are hashed before they are stored.
           </div>
+          {!isAdminLogin ? (
+            <p className="mt-4 text-center text-sm text-slate-400">
+              Already have an account?{" "}
+              <Link href="/login" className="font-medium text-cyan-300 hover:text-cyan-200">
+                Log in
+              </Link>
+            </p>
+          ) : null}
         </div>
 
         {isAdminLogin ? (
@@ -423,19 +448,6 @@ export default function SignupPage() {
           </p>
         ) : null}
       </section>
-      {!isAdminLogin ? (
-        <footer className="absolute bottom-3 right-4">
-          <button
-            type="button"
-            aria-label="Open existing credential sign-in"
-            title="Open sign-in"
-            onClick={() => setAdminLoginOpened(true)}
-            className="text-[9px] text-slate-500/35 transition-colors hover:text-slate-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
-          >
-            v1.0.0
-          </button>
-        </footer>
-      ) : null}
     </main>
   );
 }

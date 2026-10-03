@@ -5,6 +5,9 @@ import { prisma } from "@/lib/prisma";
 export default async function CampaignsPage() {
   const [campaigns, session] = await Promise.all([
     prisma.campaign.findMany({
+      where: {
+        OR: [{ deadline: null }, { deadline: { gte: new Date() } }],
+      },
       orderBy: [{ isPremium: "desc" }, { createdAt: "desc" }],
       select: {
         id: true,
@@ -15,6 +18,8 @@ export default async function CampaignsPage() {
         platforms: true,
         minFollowers: true,
         budgetRange: true,
+        budget: true,
+        deadline: true,
         location: true,
         isPremium: true,
         createdAt: true,
@@ -22,12 +27,19 @@ export default async function CampaignsPage() {
     }),
     auth(),
   ]);
+  const marketplaceCampaigns = campaigns.map((campaign) => ({
+    ...campaign,
+    budgetRange: campaign.budget.toNumber() > 0
+      ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(campaign.budget.toNumber())
+      : campaign.budgetRange,
+    deadline: campaign.deadline?.toISOString() ?? null,
+  }));
   const applicationUserId = session?.user?.role === "CREATOR" ? session.user.id : null;
   const applications = applicationUserId
     ? await prisma.campaignApplication.findMany({
         where: {
           userId: applicationUserId,
-          campaignId: { in: campaigns.map((campaign) => campaign.id) },
+          campaignId: { in: marketplaceCampaigns.map((campaign) => campaign.id) },
         },
         select: { campaignId: true },
       })
@@ -35,8 +47,8 @@ export default async function CampaignsPage() {
 
   return (
     <MarketplaceBoard
-      campaigns={campaigns}
-      canPost={Boolean(session?.user?.id)}
+      campaigns={marketplaceCampaigns}
+      canPost={session?.user?.role === "BRAND" || session?.user?.role === "ADMIN"}
       isAuthenticated={Boolean(session?.user?.id)}
       canApply={applicationUserId !== null}
       initiallyAppliedCampaignIds={applications.map((application) => application.campaignId)}

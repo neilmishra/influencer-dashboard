@@ -17,6 +17,7 @@ export interface MarketplaceCampaign {
   location: string;
   isPremium: boolean;
   createdAt: Date;
+  deadline: string | null;
 }
 
 const platforms = ["YouTube", "Instagram", "TikTok"];
@@ -32,12 +33,14 @@ export function MarketplaceBoard({
   isAuthenticated,
   canApply,
   initiallyAppliedCampaignIds,
+  detailsBasePath,
 }: {
   campaigns: MarketplaceCampaign[];
   canPost: boolean;
   isAuthenticated: boolean;
   canApply: boolean;
   initiallyAppliedCampaignIds: string[];
+  detailsBasePath?: string;
 }) {
   const router = useRouter();
   const [searchText, setSearchText] = useState("");
@@ -107,7 +110,7 @@ export function MarketplaceBoard({
   }
 
   return (
-    <main className="min-h-dvh bg-slate-50 px-4 py-8 text-slate-950 sm:px-6 lg:py-12">
+    <div className="min-h-dvh bg-slate-50 px-4 py-8 text-slate-950 sm:px-6 lg:py-12">
       <div className="mx-auto max-w-7xl space-y-7">
         <header className="flex flex-col gap-4 border-b border-slate-200 pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -115,12 +118,14 @@ export function MarketplaceBoard({
             <h1 className="mt-1 text-3xl font-semibold">Campaign marketplace</h1>
             <p className="mt-2 text-sm text-slate-600">Find brand campaigns that fit your audience and platforms.</p>
           </div>
-          <Link
-            href={canPost ? "/campaigns/new" : "/signup?admin=true"}
-            className="inline-flex min-h-10 items-center justify-center border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-800 transition hover:border-slate-500 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500"
-          >
-            {canPost ? "Post a campaign" : "Sign in to post"}
-          </Link>
+          {canPost || !isAuthenticated ? (
+            <Link
+              href={canPost ? "/campaigns/new" : "/login"}
+              className="inline-flex min-h-10 items-center justify-center border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-800 transition hover:border-slate-500 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500"
+            >
+              {canPost ? "Post a campaign" : "Log in to post"}
+            </Link>
+          ) : null}
         </header>
 
         <div className="grid gap-7 lg:grid-cols-[220px_minmax(0,1fr)]">
@@ -218,7 +223,16 @@ export function MarketplaceBoard({
                       <div className="flex items-center gap-2 text-slate-700"><Wallet aria-hidden="true" className="h-4 w-4 text-emerald-700" /><dt className="sr-only">Budget</dt><dd className="font-semibold">{campaign.budgetRange}</dd></div>
                       <div className="flex items-center gap-2 text-slate-600"><Users aria-hidden="true" className="h-4 w-4" /><dt className="sr-only">Minimum followers</dt><dd>{new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(campaign.minFollowers)}+ followers</dd></div>
                       <div className="col-span-2 flex items-center gap-2 text-xs text-slate-500"><MapPin aria-hidden="true" className="h-3.5 w-3.5" />{campaign.location}<span className="ml-auto">{new Intl.DateTimeFormat("en", { dateStyle: "medium" }).format(campaign.createdAt)}</span></div>
+                      {campaign.deadline ? <div className="col-span-2 text-xs text-slate-500">Apply by {new Intl.DateTimeFormat("en", { dateStyle: "medium" }).format(new Date(campaign.deadline))}</div> : null}
                     </dl>
+                    {detailsBasePath ? (
+                      <Link
+                        href={`${detailsBasePath}/${encodeURIComponent(campaign.id)}`}
+                        className="mt-3 inline-flex min-h-9 items-center justify-center border border-slate-300 px-3 text-sm font-semibold text-slate-700 transition hover:border-slate-500 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500"
+                      >
+                        View Details
+                      </Link>
+                    ) : null}
                     <div className="mt-4 border-t border-slate-100 pt-4">
                       <button
                         type="button"
@@ -249,6 +263,6 @@ export function MarketplaceBoard({
           </section>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

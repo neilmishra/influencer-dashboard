@@ -15,6 +15,9 @@ export async function POST(request: Request) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Sign in to post a campaign." }, { status: 401 });
   }
+  if (session.user.role !== "BRAND" && session.user.role !== "ADMIN") {
+    return NextResponse.json({ error: "Brand access is required to post a campaign." }, { status: 403 });
+  }
 
   let payload: unknown;
   try {

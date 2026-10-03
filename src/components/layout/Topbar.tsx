@@ -3,15 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { Bell, ChevronDown, LogOut, Search, Settings, UserRound } from "lucide-react";
+import { Bell, ChevronDown, LogOut, Menu, Search, Settings, UserRound } from "lucide-react";
 import { useDashboard } from "@/context/DashboardContext";
 import type { UserRole } from "@/generated/prisma/enums";
 
 interface TopbarProps {
   user: { name?: string | null; email?: string | null; role: UserRole } | null;
+  onOpenSidebar: () => void;
 }
 
-export function Topbar({ user }: TopbarProps) {
+export function Topbar({ user, onOpenSidebar }: TopbarProps) {
   const { search, setSearch } = useDashboard();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -49,9 +50,18 @@ export function Topbar({ user }: TopbarProps) {
 
   return (
     <header className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur lg:px-8">
-      <div className="lg:hidden">
+      <div className="flex items-center gap-2 lg:hidden">
+        <button
+          type="button"
+          aria-label="Open dashboard navigation"
+          aria-controls="mobile-dashboard-sidebar"
+          onClick={onOpenSidebar}
+          className="flex h-10 w-10 shrink-0 items-center justify-center border border-slate-200 text-slate-700 transition hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500"
+        >
+          <Menu aria-hidden="true" className="h-4 w-4" />
+        </button>
         <Link href="/" className="text-sm font-semibold text-slate-900">
-          Pulseboard
+          xCollab
         </Link>
       </div>
       <label className="relative flex min-w-0 flex-1 items-center">
@@ -64,12 +74,14 @@ export function Topbar({ user }: TopbarProps) {
         />
       </label>
       <div className="flex items-center gap-3">
-        <Link
-          href="/creators"
-          className="hidden rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 sm:block"
-        >
-          Roster
-        </Link>
+        {user?.role !== "CREATOR" ? (
+          <Link
+            href="/creators"
+            className="hidden rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 sm:block"
+          >
+            Roster
+          </Link>
+        ) : null}
         <button
           type="button"
           className="relative rounded-xl border border-slate-200 p-2 text-slate-500 hover:bg-slate-50"
@@ -124,7 +136,7 @@ export function Topbar({ user }: TopbarProps) {
               <button
                 type="button"
                 role="menuitem"
-                onClick={() => signOut({ callbackUrl: "/signup" })}
+                onClick={() => signOut({ callbackUrl: "/login" })}
                 className="flex min-h-10 w-full items-center gap-2 px-3 text-sm text-rose-700 hover:bg-rose-50 focus-visible:bg-rose-50 focus-visible:outline-none"
               >
                 <LogOut aria-hidden="true" className="h-4 w-4" />

@@ -49,7 +49,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientSecret: process.env.META_CLIENT_SECRET ?? "",
       authorization: {
         params: {
-          scope: "public_profile,email,instagram_basic,instagram_manage_insights",
+          scope: "public_profile,email,instagram_basic,instagram_manage_insights,pages_show_list,pages_read_engagement",
         },
       },
     }),
@@ -58,7 +58,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientSecret: process.env.TIKTOK_CLIENT_SECRET ?? "",
       authorization: {
         params: {
-          scope: "user.info.basic,video.list",
+          scope: "user.info.basic,user.info.profile,user.info.stats,video.list",
         },
       },
     }),

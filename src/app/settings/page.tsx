@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { ConnectionGrid, type SocialProvider } from "@/components/settings/ConnectionGrid";
 import { ManualMetricForm } from "@/components/settings/ManualMetricForm";
+import { SyncDataPanel } from "@/components/settings/SyncDataPanel";
 
 const providers = ["google", "facebook", "tiktok"] as const satisfies readonly SocialProvider[];
 
@@ -71,27 +72,30 @@ export default async function SettingsPage() {
       <ConnectionGrid connected={connected} configured={configured} />
 
       {session.user.role === "CREATOR" ? (
-        <section className="space-y-5 border-t border-slate-200 pt-8">
-          <header>
-            <h2 className="text-xl font-semibold text-slate-950">Manual Metric Overrides</h2>
-            <p className="mt-1 max-w-2xl text-sm text-slate-600">
-              Add self-reported metrics for any platform you prefer not to connect. These values are shown with a self-reported label on your public portfolio.
-            </p>
-          </header>
-          <ManualMetricForm
-            values={{
-              category: creatorProfile?.category ?? "",
-              bioSummary: creatorProfile?.bioSummary ?? "",
-              publicContactEmail: creatorProfile?.publicContactEmail ?? "",
-              youtubeFollowers: creatorProfile?.youtubeFollowers ?? null,
-              youtubeAverageViews: creatorProfile?.youtubeAverageViews ?? null,
-              instagramFollowers: creatorProfile?.instagramFollowers ?? null,
-              instagramAverageEngagementRate: creatorProfile?.instagramAverageEngagementRate ?? null,
-              tiktokFollowers: creatorProfile?.tiktokFollowers ?? null,
-              tiktokAverageLikes: creatorProfile?.tiktokAverageLikes ?? null,
-            }}
-          />
-        </section>
+        <>
+          <SyncDataPanel />
+          <section className="space-y-5 border-t border-slate-200 pt-8">
+            <header>
+              <h2 className="text-xl font-semibold text-slate-950">Manual Metric Overrides</h2>
+              <p className="mt-1 max-w-2xl text-sm text-slate-600">
+                Add self-reported metrics for any platform you prefer not to connect. These values are shown with a self-reported label on your public portfolio.
+              </p>
+            </header>
+            <ManualMetricForm
+              values={{
+                category: creatorProfile?.category ?? "",
+                bioSummary: creatorProfile?.bioSummary ?? "",
+                publicContactEmail: creatorProfile?.publicContactEmail ?? "",
+                youtubeFollowers: creatorProfile?.youtubeFollowers ?? null,
+                youtubeAverageViews: creatorProfile?.youtubeAverageViews ?? null,
+                instagramFollowers: creatorProfile?.instagramFollowers ?? null,
+                instagramAverageEngagementRate: creatorProfile?.instagramAverageEngagementRate ?? null,
+                tiktokFollowers: creatorProfile?.tiktokFollowers ?? null,
+                tiktokAverageLikes: creatorProfile?.tiktokAverageLikes ?? null,
+              }}
+            />
+          </section>
+        </>
       ) : null}
     </div>
   );
