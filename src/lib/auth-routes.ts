@@ -1,6 +1,6 @@
-import type { UserRole } from "@/generated/prisma/enums";
+import type { Role } from "@/generated/prisma/enums";
 
-export function dashboardRouteForRole(role: UserRole) {
+export function dashboardRouteForRole(role: Role) {
   switch (role) {
     case "BRAND":
       return "/dashboard/brand";

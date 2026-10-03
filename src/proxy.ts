@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import type { UserRole } from "@/generated/prisma/enums";
+import type { Role } from "@/generated/prisma/enums";
 import { dashboardRouteForRole } from "@/lib/auth-routes";
 
-const validRoles = ["ADMIN", "BRAND", "CREATOR"] satisfies readonly UserRole[];
-const roleRoutes: { prefix: string; roles: readonly UserRole[] }[] = [
+const validRoles = ["ADMIN", "BRAND", "CREATOR"] satisfies readonly Role[];
+const roleRoutes: { prefix: string; roles: readonly Role[] }[] = [
   { prefix: "/admin", roles: ["ADMIN"] },
   { prefix: "/dashboard/brand", roles: ["BRAND"] },
   { prefix: "/dashboard/creator", roles: ["CREATOR"] },
@@ -14,7 +14,7 @@ const roleRoutes: { prefix: string; roles: readonly UserRole[] }[] = [
   { prefix: "/creator", roles: ["CREATOR"] },
 ];
 
-function isUserRole(value: unknown): value is UserRole {
+function isUserRole(value: unknown): value is Role {
   return typeof value === "string" && validRoles.some((role) => role === value);
 }
 

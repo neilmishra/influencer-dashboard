@@ -7,11 +7,11 @@ import { LogOut, Sparkles, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import type { DashboardNavigationItem } from "@/components/layout/dashboardNavigation";
-import type { UserRole } from "@/generated/prisma/enums";
+import type { Role } from "@/generated/prisma/enums";
 
 interface SidebarProps {
   navigation: DashboardNavigationItem[];
-  user: { name?: string | null; email?: string | null; role: UserRole };
+  user: { name?: string | null; email?: string | null; role: Role };
   mobileOpen: boolean;
   setMobileOpen: Dispatch<SetStateAction<boolean>>;
 }

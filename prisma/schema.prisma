@@ -7,10 +7,20 @@ datasource db {
   provider = "postgresql"
 }
 
-enum UserRole {
+enum Role {
   ADMIN
   CREATOR
   BRAND
+
+  @@map("UserRole")
+}
+
+enum CampaignStatus {
+  PENDING_PAYMENT
+  ESCROW_LOCKED
+  SUBMITTED
+  COMPLETED
+  REFUNDED
 }
 
 model User {
@@ -20,7 +30,8 @@ model User {
   emailVerified   DateTime?
   image           String?
   passwordHash    String?
-  role            UserRole        @default(CREATOR)
+  role            Role            @default(CREATOR)
+  razorpayAccountId String?
   creatorProfile  CreatorProfile?
   brandProfile    BrandProfile?
   accounts        Account[]
@@ -108,8 +119,11 @@ model Campaign {
   platforms    String[]
   minFollowers Int
   budgetRange  String
-  budget       Decimal  @default(0) @db.Decimal(12, 2)
+  totalBudget  Decimal  @default(0) @db.Decimal(12, 2) @map("budget")
   deadline     DateTime?
+  deliverables String[] @default([])
+  status       CampaignStatus @default(PENDING_PAYMENT)
+  razorpayOrderId String? @unique
   location     String
   isPremium    Boolean  @default(false)
   createdAt    DateTime @default(now())
@@ -128,9 +142,22 @@ model CampaignApplication {
   createdAt  DateTime @default(now())
   campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  submissions Submission[]
 
   @@unique([campaignId, userId])
   @@index([userId, createdAt])
+}
+
+model Submission {
+  id            String             @id @default(cuid())
+  applicationId String
+  postUrl       String             @db.Text
+  platformPostId String?
+  screenshotUrl String?            @db.Text
+  createdAt     DateTime           @default(now())
+  application   CampaignApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId, createdAt])
 }
 
 model NewsletterSubscription {

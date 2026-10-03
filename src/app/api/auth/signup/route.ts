@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { Prisma } from "@/generated/prisma/client";
-import { UserRole } from "@/generated/prisma/enums";
+import { Role } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     !name || name.length > 100 ||
     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 ||
     Buffer.byteLength(password, "utf8") < 12 || Buffer.byteLength(password, "utf8") > 72 ||
-    (role !== UserRole.CREATOR && role !== UserRole.BRAND)
+    (role !== Role.CREATOR && role !== Role.BRAND)
   ) {
     return NextResponse.json(
       { error: "Provide a valid name, email, password (12-72 UTF-8 bytes), and public account role." },
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     role,
   };
 
-  if (role === UserRole.CREATOR) {
+  if (role === Role.CREATOR) {
     const handle = typeof payload.handle === "string"
       ? payload.handle.trim().replace(/^@+/, "")
       : "";

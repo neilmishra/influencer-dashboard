@@ -10,7 +10,7 @@ import {
   Wallet,
   type LucideIcon,
 } from "lucide-react";
-import type { UserRole } from "@/generated/prisma/enums";
+import type { Role } from "@/generated/prisma/enums";
 
 export interface DashboardNavigationItem {
   href: string;
@@ -18,7 +18,7 @@ export interface DashboardNavigationItem {
   icon: LucideIcon;
 }
 
-export const dashboardNavigation: Record<UserRole, DashboardNavigationItem[]> = {
+export const dashboardNavigation: Record<Role, DashboardNavigationItem[]> = {
   ADMIN: [
     { href: "/", label: "Overview", icon: LayoutDashboard },
     { href: "/admin/users", label: "All Users", icon: Users },
@@ -39,7 +39,7 @@ export const dashboardNavigation: Record<UserRole, DashboardNavigationItem[]> = 
   ],
 };
 
-export const dashboardTitleByRole: Record<UserRole, string> = {
+export const dashboardTitleByRole: Record<Role, string> = {
   ADMIN: "Admin Workspace",
   BRAND: "Brand Workspace",
   CREATOR: "Creator Workspace",

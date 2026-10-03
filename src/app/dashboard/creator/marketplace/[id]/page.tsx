@@ -20,7 +20,7 @@ export default async function CreatorCampaignDetailPage({ params }: CreatorCampa
       platforms: true,
       minFollowers: true,
       budgetRange: true,
-      budget: true,
+      totalBudget: true,
       deadline: true,
       location: true,
       niche: true,
@@ -29,8 +29,8 @@ export default async function CreatorCampaignDetailPage({ params }: CreatorCampa
 
   if (!campaign || (campaign.deadline && campaign.deadline < new Date())) notFound();
 
-  const budget = campaign.budget.toNumber() > 0
-    ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(campaign.budget.toNumber())
+  const budget = campaign.totalBudget.toNumber() > 0
+    ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(campaign.totalBudget.toNumber())
     : campaign.budgetRange;
 
   return (

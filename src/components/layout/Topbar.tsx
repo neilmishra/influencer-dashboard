@@ -5,10 +5,10 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { Bell, ChevronDown, LogOut, Menu, Search, Settings, UserRound } from "lucide-react";
 import { useDashboard } from "@/context/DashboardContext";
-import type { UserRole } from "@/generated/prisma/enums";
+import type { Role } from "@/generated/prisma/enums";
 
 interface TopbarProps {
-  user: { name?: string | null; email?: string | null; role: UserRole } | null;
+  user: { name?: string | null; email?: string | null; role: Role } | null;
   onOpenSidebar: () => void;
 }
 

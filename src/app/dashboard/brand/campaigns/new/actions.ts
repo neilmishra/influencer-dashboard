@@ -77,7 +77,7 @@ export async function createCampaignAction(
         platforms: [platform],
         minFollowers: 0,
         budgetRange: budgetLabel,
-        budget: new Prisma.Decimal(rawBudget),
+        totalBudget: new Prisma.Decimal(rawBudget),
         deadline: deadlineDate,
         location: "Remote",
         userId: session.user.id,

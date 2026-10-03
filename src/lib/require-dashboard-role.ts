@@ -1,15 +1,15 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import type { UserRole } from "@/generated/prisma/enums";
+import type { Role } from "@/generated/prisma/enums";
 import { dashboardRouteForRole } from "@/lib/auth-routes";
 
-const validRoles = ["ADMIN", "BRAND", "CREATOR"] satisfies readonly UserRole[];
+const validRoles = ["ADMIN", "BRAND", "CREATOR"] satisfies readonly Role[];
 
-function isUserRole(value: unknown): value is UserRole {
+function isUserRole(value: unknown): value is Role {
   return typeof value === "string" && validRoles.some((role) => role === value);
 }
 
-export async function requireDashboardRole(...allowedRoles: UserRole[]) {
+export async function requireDashboardRole(...allowedRoles: Role[]) {
   const session = await auth();
   const role: unknown = session?.user?.role;
 

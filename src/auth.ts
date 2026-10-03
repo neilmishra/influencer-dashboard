@@ -6,18 +6,18 @@ import GoogleProvider from "next-auth/providers/google";
 import TikTokProvider from "next-auth/providers/tiktok";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
-import type { UserRole } from "@/generated/prisma/enums";
+import type { Role } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/prisma";
 
 declare module "next-auth" {
   interface User {
-    role: UserRole;
+    role: Role;
   }
 
   interface Session {
     user: {
       id: string;
-      role: UserRole;
+      role: Role;
     } & DefaultSession["user"];
   }
 }
@@ -25,7 +25,7 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT {
     id?: string;
-    role?: UserRole;
+    role?: Role;
   }
 }
 

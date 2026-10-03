@@ -7,11 +7,11 @@ import { FilterBar } from "@/components/layout/FilterBar";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Topbar } from "@/components/layout/Topbar";
 import { dashboardNavigation } from "@/components/layout/dashboardNavigation";
-import type { UserRole } from "@/generated/prisma/enums";
+import type { Role } from "@/generated/prisma/enums";
 
 interface AppShellProps {
   children: React.ReactNode;
-  user: { name?: string | null; email?: string | null; role: UserRole } | null;
+  user: { name?: string | null; email?: string | null; role: Role } | null;
 }
 
 export function AppShell({ children, user }: Readonly<AppShellProps>) {

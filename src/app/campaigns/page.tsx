@@ -18,7 +18,7 @@ export default async function CampaignsPage() {
         platforms: true,
         minFollowers: true,
         budgetRange: true,
-        budget: true,
+        totalBudget: true,
         deadline: true,
         location: true,
         isPremium: true,
@@ -29,8 +29,8 @@ export default async function CampaignsPage() {
   ]);
   const marketplaceCampaigns = campaigns.map((campaign) => ({
     ...campaign,
-    budgetRange: campaign.budget.toNumber() > 0
-      ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(campaign.budget.toNumber())
+    budgetRange: campaign.totalBudget.toNumber() > 0
+      ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(campaign.totalBudget.toNumber())
       : campaign.budgetRange,
     deadline: campaign.deadline?.toISOString() ?? null,
   }));
