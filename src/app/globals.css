@@ -6,6 +6,17 @@
   --sidebar: #0b1220;
 }
 
+/* Dark mode — toggled by PreferencesPanel via data-theme="dark" on <html> */
+html[data-theme="dark"] {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --sidebar: #020617;
+}
+
+html[data-theme="dark"] body {
+  color-scheme: dark;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
