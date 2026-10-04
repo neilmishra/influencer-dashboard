@@ -5,6 +5,7 @@ import { Check, Loader2, AlertCircle, Camera } from "lucide-react";
 
 interface ProfileFormProps {
   initialName: string;
+  /** Displayed read-only; email cannot be changed through this form. */
   initialEmail: string;
   roleLabel: string;
 }
@@ -17,7 +18,6 @@ export function ProfileForm({
   roleLabel,
 }: ProfileFormProps) {
   const [name, setName] = useState(initialName);
-  const [email, setEmail] = useState(initialEmail);
   const [avatarSrc, setAvatarSrc] = useState<string | null>(null);
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -47,7 +47,8 @@ export function ProfileForm({
       const res = await fetch("/api/user/update-profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), email: email.trim() }),
+        // Email is not included — the API only accepts name updates.
+        body: JSON.stringify({ name: name.trim() }),
       });
 
       const data = await res.json().catch(() => ({})) as { error?: string };
@@ -138,20 +139,22 @@ export function ProfileForm({
           />
         </div>
 
-        {/* ── Email ── */}
+        {/* ── Email — read-only ── */}
         <div className="flex items-center justify-between gap-4 px-5 py-4">
-          <label htmlFor="settings-email" className="font-medium text-slate-700">
-            Email address
-          </label>
+          <div>
+            <label htmlFor="settings-email" className="font-medium text-slate-700">
+              Email address
+            </label>
+            <p className="mt-0.5 text-[11px] text-slate-400">Contact support to change your email.</p>
+          </div>
           <input
             id="settings-email"
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            required
-            maxLength={254}
-            className="h-9 w-56 rounded border border-slate-300 bg-slate-50 px-3 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-violet-500"
+            defaultValue={initialEmail}
+            readOnly
+            aria-readonly="true"
+            tabIndex={-1}
+            className="h-9 w-56 cursor-not-allowed rounded border border-slate-200 bg-slate-100 px-3 text-sm text-slate-400 outline-none select-none"
           />
         </div>
 

@@ -1,22 +1,81 @@
 @import "tailwindcss";
 
+/* ── Light mode tokens ─────────────────────────────────────────────────────── */
 :root {
+  /* Page canvas */
   --background: #f3f5f9;
   --foreground: #0f172a;
+
+  /* Sidebar (always dark regardless of theme) */
   --sidebar: #0b1220;
+
+  /* Card / panel surface — sits above the canvas */
+  --card: #ffffff;
+  --card-border: #e2e8f0;       /* slate-200 */
+  --card-divide: #f1f5f9;       /* slate-100 */
+
+  /* Topbar */
+  --topbar-bg: rgba(255, 255, 255, 0.92);
+  --topbar-border: #e2e8f0;
+
+  /* Text */
+  --text-primary: #0f172a;      /* slate-950 */
+  --text-secondary: #334155;    /* slate-700 */
+  --text-muted: #64748b;        /* slate-500 */
+
+  /* Form inputs */
+  --input-bg: #f8fafc;          /* slate-50 */
+  --input-bg-focus: #ffffff;
+  --input-border: #cbd5e1;      /* slate-300 */
+  --input-text: #0f172a;        /* slate-900 */
+  --input-placeholder: #94a3b8; /* slate-400 */
+
+  /* Dropdown menus */
+  --menu-bg: #ffffff;
+  --menu-border: #e2e8f0;
+  --menu-item: #334155;
 }
 
-/* Dark mode — toggled by PreferencesPanel via data-theme="dark" on <html> */
+/* ── Dark mode tokens ──────────────────────────────────────────────────────── */
+/* Toggled by PreferencesPanel via data-theme="dark" on <html>                 */
 html[data-theme="dark"] {
+  /* Page canvas — deep charcoal, not pure black */
   --background: #0f172a;
-  --foreground: #f1f5f9;
-  --sidebar: #020617;
-}
+  --foreground: #e2e8f0;        /* slate-200 */
 
-html[data-theme="dark"] body {
+  /* Sidebar stays as-is (already dark) */
+  --sidebar: #020617;
+
+  /* Card — noticeably lighter than canvas so panels pop */
+  --card: #1e293b;              /* slate-800 */
+  --card-border: #334155;       /* slate-700 */
+  --card-divide: #293548;       /* between slate-700 and slate-800 */
+
+  /* Topbar */
+  --topbar-bg: rgba(15, 23, 42, 0.95);
+  --topbar-border: #334155;
+
+  /* Text — crisp on dark surfaces */
+  --text-primary: #f1f5f9;      /* slate-100 */
+  --text-secondary: #cbd5e1;    /* slate-300 */
+  --text-muted: #94a3b8;        /* slate-400 */
+
+  /* Form inputs — slightly recessed into the card */
+  --input-bg: #0f172a;          /* same as canvas, recessed */
+  --input-bg-focus: #162032;
+  --input-border: #475569;      /* slate-600 */
+  --input-text: #f1f5f9;        /* slate-100 */
+  --input-placeholder: #64748b; /* slate-500 */
+
+  /* Dropdown menus */
+  --menu-bg: #1e293b;
+  --menu-border: #334155;
+  --menu-item: #cbd5e1;
+
   color-scheme: dark;
 }
 
+/* ── Tailwind token mapping ────────────────────────────────────────────────── */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -24,6 +83,7 @@ html[data-theme="dark"] body {
   --font-mono: var(--font-geist-mono);
 }
 
+/* ── Base styles ───────────────────────────────────────────────────────────── */
 html,
 body {
   min-height: 100%;
@@ -37,5 +97,104 @@ body {
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: #475569 transparent;
 }
+
+/* ── Dark mode — component-level overrides ─────────────────────────────────── */
+/* These target the hardcoded Tailwind classes used in existing components so   */
+/* they don't each need individual dark: variants added.                        */
+
+/* --- Topbar --- */
+html[data-theme="dark"] .bg-white\/90 {
+  background-color: var(--topbar-bg) !important;
+}
+html[data-theme="dark"] .border-slate-200 {
+  border-color: var(--card-border) !important;
+}
+
+/* --- Card panels (bg-white used in settings rows and dropdowns) --- */
+html[data-theme="dark"] .bg-white {
+  background-color: var(--card) !important;
+}
+
+/* --- Dividers inside card panels (divide-slate-100) --- */
+html[data-theme="dark"] .divide-slate-100 > * + * {
+  border-top-color: var(--card-divide) !important;
+}
+
+/* --- Form inputs & selects --- */
+html[data-theme="dark"] .bg-slate-50 {
+  background-color: var(--input-bg) !important;
+}
+html[data-theme="dark"] .focus\:bg-white:focus {
+  background-color: var(--input-bg-focus) !important;
+}
+html[data-theme="dark"] .border-slate-300 {
+  border-color: var(--input-border) !important;
+}
+
+/* --- Text colours — labels, body copy --- */
+html[data-theme="dark"] .text-slate-950,
+html[data-theme="dark"] .text-slate-900 {
+  color: var(--text-primary) !important;
+}
+html[data-theme="dark"] .text-slate-700 {
+  color: var(--text-secondary) !important;
+}
+html[data-theme="dark"] .text-slate-600 {
+  color: var(--text-muted) !important;
+}
+html[data-theme="dark"] .text-slate-500 {
+  color: var(--text-muted) !important;
+}
+
+/* --- Topbar search input --- */
+html[data-theme="dark"] input[placeholder*="Search"] {
+  background-color: var(--input-bg) !important;
+  color: var(--input-text) !important;
+  border-color: var(--input-border) !important;
+}
+
+/* --- Topbar hover states that use slate-50 --- */
+html[data-theme="dark"] .hover\:bg-slate-50:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* --- Profile dropdown menu --- */
+html[data-theme="dark"] [role="menu"] {
+  background-color: var(--menu-bg) !important;
+  border-color: var(--menu-border) !important;
+}
+html[data-theme="dark"] [role="menu"] .border-slate-100 {
+  border-color: var(--card-divide) !important;
+}
+html[data-theme="dark"] [role="menuitem"] {
+  color: var(--menu-item) !important;
+}
+
+/* --- Select elements --- */
+html[data-theme="dark"] select {
+  background-color: var(--input-bg) !important;
+  color: var(--input-text) !important;
+  border-color: var(--input-border) !important;
+}
+html[data-theme="dark"] select option {
+  background-color: var(--card);
+  color: var(--text-primary);
+}
+
+/* --- FilterBar (if it uses bg-white / border-slate-200) --- */
+html[data-theme="dark"] .bg-white\/80 {
+  background-color: rgba(30, 41, 59, 0.9) !important;
+}
+
+/* --- Read-only / disabled inputs (e.g. locked email field) --- */
+html[data-theme="dark"] .bg-slate-100 {
+  background-color: #0d1728 !important; /* deeper than canvas for a recessed look */
+}
+html[data-theme="dark"] .border-slate-200 + .text-slate-400,
+html[data-theme="dark"] input[readonly] {
+  color: #64748b !important; /* slate-500 — muted but legible */
+  border-color: #334155 !important;
+}
+

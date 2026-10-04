@@ -3,8 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import { Bell, ChevronDown, LogOut, Menu, Search, Settings, UserRound } from "lucide-react";
 import { useDashboard } from "@/context/DashboardContext";
+import { getRouteContext } from "@/lib/utils";
 import type { Role } from "@/generated/prisma/enums";
 
 interface TopbarProps {
@@ -14,6 +16,7 @@ interface TopbarProps {
 
 export function Topbar({ user, onOpenSidebar }: TopbarProps) {
   const { search, setSearch } = useDashboard();
+  const pathname = usePathname();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const profileButtonRef = useRef<HTMLButtonElement>(null);
@@ -48,6 +51,10 @@ export function Topbar({ user, onOpenSidebar }: TopbarProps) {
     : user?.email ?? "Signed in";
   const avatarInitial = displayName.charAt(0).toUpperCase();
 
+  const routeContext = pathname ? getRouteContext(pathname) : "dashboard";
+  const showSearch = routeContext !== "default";
+  const showRoster = routeContext !== "default" && user?.role !== "CREATOR";
+
   return (
     <header className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur lg:px-8">
       <div className="flex items-center gap-2 lg:hidden">
@@ -64,24 +71,28 @@ export function Topbar({ user, onOpenSidebar }: TopbarProps) {
           xCollab
         </Link>
       </div>
-      <label className="relative flex min-w-0 flex-1 items-center">
-        <Search className="pointer-events-none absolute left-3 h-4 w-4 text-slate-400" />
-        <input
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          placeholder="Search creators, niches, campaigns..."
-          className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 text-sm text-slate-900 outline-none ring-violet-500 placeholder:text-slate-400 focus:bg-white focus:ring-2"
-        />
-      </label>
+      {showSearch ? (
+        <label className="relative flex min-w-0 flex-1 items-center">
+          <Search className="pointer-events-none absolute left-3 h-4 w-4 text-slate-400" />
+          <input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search creators, niches, campaigns..."
+            className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 text-sm text-slate-900 outline-none ring-violet-500 placeholder:text-slate-400 focus:bg-white focus:ring-2"
+          />
+        </label>
+      ) : (
+        <div className="flex-1" />
+      )}
       <div className="flex items-center gap-3">
-        {user?.role !== "CREATOR" ? (
+        {showRoster && (
           <Link
             href="/creators"
             className="hidden rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 sm:block"
           >
             Roster
           </Link>
-        ) : null}
+        )}
         <button
           type="button"
           className="relative rounded-xl border border-slate-200 p-2 text-slate-500 hover:bg-slate-50"

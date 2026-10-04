@@ -73,3 +73,13 @@ export function formatShortDate(iso: string): string {
     day: "numeric",
   }).format(date);
 }
+
+export type RouteContext = "default" | "dashboard";
+
+export function getRouteContext(pathname: string): RouteContext {
+  if (pathname === "/settings" || pathname.startsWith("/settings/")) {
+    return "default";
+  }
+  return "dashboard";
+}
+

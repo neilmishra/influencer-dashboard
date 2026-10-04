@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { unstable_rethrow } from "next/navigation";
 import { headers } from "next/headers";
+import { auth } from "@/auth";
 import { AddCreatorModal } from "@/components/creator/AddCreatorModal";
 import type { Creator } from "@/types";
 
@@ -54,6 +55,8 @@ async function getCreators(): Promise<{ creators: Creator[]; error: boolean }> {
 
 export default async function CreatorsPage() {
   const { creators, error } = await getCreators();
+  const session = await auth();
+  const userRole = session?.user?.role;
 
   return (
     <div className="-mx-4 -my-6 min-h-[calc(100vh-8rem)] bg-slate-950 px-4 py-6 text-slate-100 sm:px-6 lg:-mx-8 lg:px-8 lg:py-8">
@@ -70,7 +73,7 @@ export default async function CreatorsPage() {
                 : `${creators.length} creator${creators.length === 1 ? "" : "s"} in your roster`}
             </p>
           </div>
-          <AddCreatorModal />
+          {userRole !== "BRAND" && <AddCreatorModal />}
         </header>
 
         {error ? (

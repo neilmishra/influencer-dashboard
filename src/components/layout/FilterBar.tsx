@@ -1,8 +1,9 @@
 "use client";
 
 import { Camera, Music2, PlayCircle } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { useDashboard } from "@/context/DashboardContext";
-import { cn } from "@/lib/utils";
+import { cn, getRouteContext } from "@/lib/utils";
 import type { ChannelFilter, Timeframe } from "@/types/dashboard";
 
 const channels: { id: ChannelFilter; label: string }[] = [
@@ -27,6 +28,13 @@ function ChannelIcon({ id }: { id: ChannelFilter }) {
 
 export function FilterBar() {
   const { channel, timeframe, setChannel, setTimeframe } = useDashboard();
+  const pathname = usePathname();
+  const routeContext = pathname ? getRouteContext(pathname) : "dashboard";
+
+  if (routeContext === "default") {
+    return null;
+  }
+
 
   return (
     <div className="flex flex-col gap-3 border-b border-slate-200 bg-white px-4 py-3 lg:flex-row lg:items-center lg:justify-between lg:px-8">
