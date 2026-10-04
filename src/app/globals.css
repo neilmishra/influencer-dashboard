@@ -6,6 +6,11 @@
   --background: #f3f5f9;
   --foreground: #0f172a;
 
+  /* Branding */
+  --primary: #004BFF;
+  --primary-hover: #003ad6;
+  --accent: #00B2FF;
+
   /* Sidebar (always dark regardless of theme) */
   --sidebar: #0b1220;
 
@@ -39,20 +44,25 @@
 /* ── Dark mode tokens ──────────────────────────────────────────────────────── */
 /* Toggled by PreferencesPanel via data-theme="dark" on <html>                 */
 html[data-theme="dark"] {
-  /* Page canvas — deep charcoal, not pure black */
-  --background: #0f172a;
+  /* Page canvas — deep slate canvas */
+  --background: #0b0f19;
   --foreground: #e2e8f0;        /* slate-200 */
+
+  /* Branding */
+  --primary: #004BFF;
+  --primary-hover: #003ad6;
+  --accent: #00B2FF;
 
   /* Sidebar stays as-is (already dark) */
   --sidebar: #020617;
 
-  /* Card — noticeably lighter than canvas so panels pop */
-  --card: #1e293b;              /* slate-800 */
+  /* Card — solid distinct charcoal */
+  --card: #172033;
   --card-border: #334155;       /* slate-700 */
   --card-divide: #293548;       /* between slate-700 and slate-800 */
 
   /* Topbar */
-  --topbar-bg: rgba(15, 23, 42, 0.95);
+  --topbar-bg: rgba(11, 15, 25, 0.95);
   --topbar-border: #334155;
 
   /* Text — crisp on dark surfaces */
@@ -61,14 +71,14 @@ html[data-theme="dark"] {
   --text-muted: #94a3b8;        /* slate-400 */
 
   /* Form inputs — slightly recessed into the card */
-  --input-bg: #0f172a;          /* same as canvas, recessed */
-  --input-bg-focus: #162032;
+  --input-bg: #0b0f19;          /* same as canvas, recessed */
+  --input-bg-focus: #101626;
   --input-border: #475569;      /* slate-600 */
   --input-text: #f1f5f9;        /* slate-100 */
   --input-placeholder: #64748b; /* slate-500 */
 
   /* Dropdown menus */
-  --menu-bg: #1e293b;
+  --menu-bg: #172033;
   --menu-border: #334155;
   --menu-item: #cbd5e1;
 
@@ -79,6 +89,9 @@ html[data-theme="dark"] {
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-accent: var(--accent);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

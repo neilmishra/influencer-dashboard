@@ -29,9 +29,9 @@ function ChannelIcon({ id }: { id: ChannelFilter }) {
 export function FilterBar() {
   const { channel, timeframe, setChannel, setTimeframe } = useDashboard();
   const pathname = usePathname();
-  const routeContext = pathname ? getRouteContext(pathname) : "dashboard";
+  const routeContext = pathname ? getRouteContext(pathname) : "default";
 
-  if (routeContext === "default") {
+  if (routeContext !== "creators_list" && routeContext !== "campaigns_list") {
     return null;
   }
 

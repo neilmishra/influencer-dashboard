@@ -35,9 +35,7 @@ function SidebarContents({
   return (
     <>
       <Link href="/" onClick={onNavigate} className="flex items-center gap-3 px-5 py-6">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500 text-white">
-          <Sparkles aria-hidden="true" className="h-5 w-5" />
-        </span>
+        <img src="/logo-transparent.png" alt="CX Logo" className="h-10 w-10 shrink-0 object-contain" />
         <span>
           <span className="block text-sm font-semibold tracking-wide text-white">xCollab</span>
           <span className="block text-xs text-slate-400">Influencer intelligence</span>
@@ -55,9 +53,9 @@ function SidebarContents({
               onClick={onNavigate}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "flex min-h-10 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300",
+                "flex min-h-10 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
                 isActive
-                  ? "bg-white/10 text-white"
+                  ? "bg-primary text-white"
                   : "text-slate-400 hover:bg-white/5 hover:text-white",
               )}
             >
@@ -70,13 +68,13 @@ function SidebarContents({
 
       <div className="border-t border-white/10 p-3">
         <div className="flex min-w-0 items-center gap-3 px-2 py-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-cyan-200 text-sm font-semibold text-slate-950">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-semibold text-white">
             {initial}
           </span>
           <span className="min-w-0 flex-1">
             <span className="block truncate text-sm font-medium text-white">{displayName}</span>
             {user.email ? <span className="block truncate text-xs text-slate-400">{user.email}</span> : null}
-            <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-wide text-cyan-300">
+            <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-wide text-accent">
               {user.role}
             </span>
           </span>
@@ -84,7 +82,7 @@ function SidebarContents({
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="flex min-h-10 w-full items-center gap-2 rounded-lg px-3 text-sm font-medium text-slate-400 transition hover:bg-rose-400/10 hover:text-rose-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+          className="flex min-h-10 w-full items-center gap-2 rounded-lg px-3 text-sm font-medium text-slate-400 transition hover:bg-rose-400/10 hover:text-rose-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           <LogOut aria-hidden="true" className="h-4 w-4" />
           Sign out
@@ -130,7 +128,7 @@ export function Sidebar({ navigation, user, mobileOpen, setMobileOpen }: Sidebar
                 type="button"
                 aria-label="Close navigation"
                 onClick={() => setMobileOpen(false)}
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-cyan-300"
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-accent"
               >
                 <X aria-hidden="true" className="h-4 w-4" />
               </button>

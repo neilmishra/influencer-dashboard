@@ -51,7 +51,7 @@ export function Topbar({ user, onOpenSidebar }: TopbarProps) {
     : user?.email ?? "Signed in";
   const avatarInitial = displayName.charAt(0).toUpperCase();
 
-  const routeContext = pathname ? getRouteContext(pathname) : "dashboard";
+  const routeContext = pathname ? getRouteContext(pathname) : "default";
   const showSearch = routeContext !== "default";
   const showRoster = routeContext !== "default" && user?.role !== "CREATOR";
 
@@ -63,12 +63,13 @@ export function Topbar({ user, onOpenSidebar }: TopbarProps) {
           aria-label="Open dashboard navigation"
           aria-controls="mobile-dashboard-sidebar"
           onClick={onOpenSidebar}
-          className="flex h-10 w-10 shrink-0 items-center justify-center border border-slate-200 text-slate-700 transition hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500"
+          className="flex h-10 w-10 shrink-0 items-center justify-center border border-slate-200 text-slate-700 transition hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         >
           <Menu aria-hidden="true" className="h-4 w-4" />
         </button>
-        <Link href="/" className="text-sm font-semibold text-slate-900">
-          xCollab
+        <Link href="/" className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+          <img src="/logo.png" alt="CX" className="h-7 w-7 object-contain" />
+          <span className="hidden sm:inline-block">xCollab</span>
         </Link>
       </div>
       {showSearch ? (
@@ -78,7 +79,7 @@ export function Topbar({ user, onOpenSidebar }: TopbarProps) {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search creators, niches, campaigns..."
-            className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 text-sm text-slate-900 outline-none ring-violet-500 placeholder:text-slate-400 focus:bg-white focus:ring-2"
+            className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 text-sm text-slate-900 outline-none ring-primary placeholder:text-slate-400 focus:bg-white focus:ring-2"
           />
         </label>
       ) : (
@@ -99,7 +100,7 @@ export function Topbar({ user, onOpenSidebar }: TopbarProps) {
           aria-label="Notifications"
         >
           <Bell className="h-4 w-4" />
-          <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-violet-500" />
+          <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-accent" />
         </button>
         <div ref={profileRef} className="relative">
           <button
@@ -109,9 +110,9 @@ export function Topbar({ user, onOpenSidebar }: TopbarProps) {
             aria-expanded={isProfileOpen}
             aria-label={`Profile menu for ${displayName}`}
             onClick={() => setIsProfileOpen((open) => !open)}
-            className="flex items-center gap-2 rounded-xl p-1.5 text-left hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500"
+            className="flex items-center gap-2 rounded-xl p-1.5 text-left hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-sm font-semibold text-white">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-sm font-semibold text-white">
               {avatarInitial || <UserRound aria-hidden="true" className="h-4 w-4" />}
             </span>
             <span className="hidden leading-tight md:block">

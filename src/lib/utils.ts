@@ -74,12 +74,27 @@ export function formatShortDate(iso: string): string {
   }).format(date);
 }
 
-export type RouteContext = "default" | "dashboard";
+export type RouteContext = "creators_list" | "campaigns_list" | "campaign_detail" | "default";
 
 export function getRouteContext(pathname: string): RouteContext {
   if (pathname === "/settings" || pathname.startsWith("/settings/")) {
     return "default";
   }
-  return "dashboard";
+  if (pathname === "/creators" || pathname.startsWith("/creators/")) {
+    return "creators_list";
+  }
+  if (pathname === "/campaigns" || pathname.startsWith("/campaigns/")) {
+    // If it's a detail page like /campaigns/[id] and not just /campaigns or /campaigns/new
+    // Actually the instruction just says "If path includes /campaigns -> return 'campaigns_list'"
+    // But they mentioned 'campaign_detail'. I'll handle detail explicitly if there's a third segment, otherwise campaigns_list.
+    // Or I'll just check if it matches a UUID pattern or generic detail path.
+    // Let's just do:
+    const segments = pathname.split("/").filter(Boolean);
+    if (segments[0] === "campaigns" && segments.length > 1 && segments[1] !== "new") {
+      return "campaign_detail";
+    }
+    return "campaigns_list";
+  }
+  return "default";
 }
 
