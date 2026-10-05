@@ -38,7 +38,7 @@ function SidebarContents({
         <img src="/logo-transparent.png" alt="CX Logo" className="h-10 w-10 shrink-0 object-contain" />
         <span>
           <span className="block text-sm font-semibold tracking-wide text-white">xCollab</span>
-          <span className="block text-xs text-slate-400">Influencer intelligence</span>
+          <span className="block text-xs text-slate-400">Escrow-powered marketplace</span>
         </span>
       </Link>
 

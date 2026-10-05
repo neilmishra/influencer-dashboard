@@ -16,9 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "xCollab | Influencer Data Dashboard",
+  title: "xCollab | Creator & Brand Escrow Marketplace",
   description:
-    "Track creator performance, campaign ROI, EMV, and audience demographics across Instagram, YouTube, and TikTok.",
+    "xCollab matches premium brands with verified creators. Razorpay-locked escrow, cross-platform identity verification, and transparent EMV/ROI analytics across Instagram, YouTube, and TikTok.",
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
@@ -31,7 +31,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full bg-background text-foreground">
         <AppShell user={session?.user ?? null}>{children}</AppShell>
-        <Footer />
+        <Footer user={session?.user ?? null} />
       </body>
     </html>
   );

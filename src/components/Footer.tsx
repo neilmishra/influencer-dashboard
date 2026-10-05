@@ -2,30 +2,148 @@
 
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
-import { ArrowRight, Camera, LoaderCircle, Play, Sparkles, Users } from "lucide-react";
+import { ArrowRight, LoaderCircle } from "lucide-react";
 import { usePathname } from "next/navigation";
+import type { Role } from "@/generated/prisma/enums";
 
-const creatorLinks = [
+interface FooterProps {
+  user: { name?: string | null; email?: string | null; role?: Role | null } | null;
+}
+
+const publicLinks = [
   { label: "Explore Campaigns", href: "/campaigns" },
   { label: "Creator Directory", href: "/creators" },
-  { label: "Success Stories", href: "/creators" },
-  { label: "Developer Connections", href: "/settings" },
+  { label: "Platform Security", href: "/terms" },
+  { label: "Account Settings", href: "/settings" },
 ];
 
-const brandLinks = [
-  { label: "Post a Campaign", href: "/campaigns/new" },
-  { label: "Find Influencers", href: "/creators" },
-  { label: "Pricing Plans", href: "/campaigns/new" },
-  { label: "Enterprise Solutions", href: "/campaigns/new" },
+const brandAndAdminLinks = [
+  { label: "Brand Tools", href: "/dashboard/brand" },
+  { label: "Campaign Billing", href: "/brand/payments" },
+  { label: "Roster Access", href: "/creators" },
 ];
 
-export function Footer() {
+const creatorLinks = [
+  { label: "Creator Suite", href: "/dashboard/creator/marketplace" },
+  { label: "Live Escrow Deals", href: "/creator/collaborations" },
+  { label: "My Earnings Tracker", href: "/creator/earnings" },
+];
+
+const complianceLinks = [
+  { label: "Terms of Service", href: "/terms" },
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Cookie Policy", href: "/cookie-policy" },
+  { label: "Support & Contact", href: "/contact" },
+  { label: "Contact Compliance", href: "mailto:legal@xcollab.app" },
+];
+
+function XIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.25}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M4 4l7.5 10L4.5 20H7l6-6.2L17 20h3l-7.8-10.5L19.5 4H17l-5.5 5.8L8 4H4Z" />
+    </svg>
+  );
+}
+
+function TikTokIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M15.5 3.5a5.5 5.5 0 0 0 5 5.5V12a8 8 0 0 1-3-.5v5a5.5 5.5 0 1 1-5.5-5.5" />
+      <path d="M12 8.5v9" />
+      <path d="M9 11.5a3 3 0 1 0 3 3V8.5" />
+    </svg>
+  );
+}
+
+function InstagramIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <rect x={3} y={3} width={18} height={18} rx={5} />
+      <circle cx={12} cy={12} r={4} />
+      <circle cx={17.5} cy={6.5} r={1} fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+function YouTubeIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <rect x={2.5} y={5} width={19} height={14} rx={3.5} />
+      <path d="M10 9.5l5 2.5-5 2.5z" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+const socialProfiles = [
+  {
+    label: "X (Twitter)",
+    href: "https://x.com/xcollabapp",
+    Icon: XIcon,
+  },
+  {
+    label: "TikTok",
+    href: "https://www.tiktok.com/@xcollab",
+    Icon: TikTokIcon,
+  },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/xcollab.app/",
+    Icon: InstagramIcon,
+  },
+  {
+    label: "YouTube",
+    href: "https://www.youtube.com/@xCollabApp",
+    Icon: YouTubeIcon,
+  },
+];
+
+export function Footer({ user }: FooterProps) {
   const pathname = usePathname();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [newsletterError, setNewsletterError] = useState<string | null>(null);
 
   if (pathname?.startsWith("/p/")) return null;
+
+  const role = user?.role ?? null;
+  const showBrandSection = role === "BRAND" || role === "ADMIN";
+  const showCreatorSection = role === "CREATOR";
 
   async function handleNewsletterSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -58,75 +176,92 @@ export function Footer() {
 
   return (
     <footer className="border-t border-slate-200 bg-white text-slate-600">
-      <div className="mx-auto grid max-w-7xl gap-x-8 gap-y-10 px-4 py-10 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.35fr_1fr_1fr_1.4fr] lg:px-8 lg:py-12">
+      <div className="mx-auto grid max-w-7xl gap-x-8 gap-y-10 px-4 py-10 sm:px-6 lg:grid-cols-[1.35fr_1fr_1fr_1.4fr] lg:px-8 lg:py-12">
         <div>
           <Link href="/" className="inline-flex items-center gap-2 text-slate-950">
-            <span className="flex h-8 w-8 items-center justify-center bg-slate-950 text-cyan-300">
-              <Sparkles aria-hidden="true" className="h-4 w-4" />
-            </span>
-            <span className="text-sm font-semibold">Influencer Dashboard</span>
+            <img src="/logo-transparent.png" alt="xCollab Logo" className="h-8 w-auto" />
+            <span className="text-sm font-semibold">xCollab</span>
           </Link>
           <p className="mt-3 max-w-xs text-sm leading-6 text-slate-500">
-            The ultra-fast campaign marketplace for modern creators and premium brands.
+            The escrow-powered campaign marketplace for verified creators and performance-driven brands.
+            Razorpay-locked budgets, cross-platform identity checks, transparent EMV reporting.
           </p>
           <div className="mt-4 flex items-center gap-2">
-            <a
-              href="https://www.instagram.com/"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Instagram"
-              className="flex h-9 w-9 items-center justify-center border border-slate-200 text-slate-600 transition hover:border-slate-400 hover:text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500"
-            >
-              <Camera aria-hidden="true" className="h-4 w-4" />
-            </a>
-            <a
-              href="https://www.linkedin.com/"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="LinkedIn"
-              className="flex h-9 w-9 items-center justify-center border border-slate-200 text-slate-600 transition hover:border-slate-400 hover:text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500"
-            >
-              <Users aria-hidden="true" className="h-4 w-4" />
-            </a>
-            <a
-              href="https://www.youtube.com/"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="YouTube"
-              className="flex h-9 w-9 items-center justify-center border border-slate-200 text-slate-600 transition hover:border-slate-400 hover:text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500"
-            >
-              <Play aria-hidden="true" className="h-4 w-4" />
-            </a>
+            {socialProfiles.map(({ label, href, Icon }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={label}
+                title={label}
+                className="flex h-9 w-9 items-center justify-center border border-slate-200 text-slate-600 transition hover:border-slate-500 hover:text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              >
+                <Icon aria-hidden="true" className="h-4 w-4" />
+              </a>
+            ))}
           </div>
         </div>
 
-        <nav aria-label="For Creators">
-          <h2 className="text-xs font-semibold uppercase text-slate-900">For Creators</h2>
-          <ul className="mt-4 space-y-2.5">
-            {creatorLinks.map((link) => (
-              <li key={link.label}>
-                <Link href={link.href} className="group inline-flex items-center gap-2 text-sm transition hover:text-slate-950">
-                  <span aria-hidden="true" className="h-1 w-1 shrink-0 rounded-full bg-cyan-600 transition group-hover:scale-125" />
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        {showCreatorSection ? (
+          <nav aria-label="Creator workspace">
+            <h2 className="text-xs font-semibold uppercase text-slate-900">Creator Suite</h2>
+            <ul className="mt-4 space-y-2.5">
+              {creatorLinks.map((link) => (
+                <li key={link.label}>
+                  <Link href={link.href} className="group inline-flex items-center gap-2 text-sm transition hover:text-slate-950">
+                    <span aria-hidden="true" className="h-1 w-1 shrink-0 rounded-full bg-accent transition group-hover:scale-125" />
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ) : (
+          <nav aria-label="Public marketplace">
+            <h2 className="text-xs font-semibold uppercase text-slate-900">Marketplace</h2>
+            <ul className="mt-4 space-y-2.5">
+              {publicLinks.map((link) => (
+                <li key={link.label}>
+                  <Link href={link.href} className="group inline-flex items-center gap-2 text-sm transition hover:text-slate-950">
+                    <span aria-hidden="true" className="h-1 w-1 shrink-0 rounded-full bg-accent transition group-hover:scale-125" />
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
 
-        <nav aria-label="For Brands">
-          <h2 className="text-xs font-semibold uppercase text-slate-900">For Brands</h2>
-          <ul className="mt-4 space-y-2.5">
-            {brandLinks.map((link) => (
-              <li key={link.label}>
-                <Link href={link.href} className="group inline-flex items-center gap-2 text-sm transition hover:text-slate-950">
-                  <span aria-hidden="true" className="h-1 w-1 shrink-0 rounded-full bg-violet-500 transition group-hover:scale-125" />
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        {showBrandSection ? (
+          <nav aria-label="Brand & admin tools">
+            <h2 className="text-xs font-semibold uppercase text-slate-900">Brand Tools</h2>
+            <ul className="mt-4 space-y-2.5">
+              {brandAndAdminLinks.map((link) => (
+                <li key={link.label}>
+                  <Link href={link.href} className="group inline-flex items-center gap-2 text-sm transition hover:text-slate-950">
+                    <span aria-hidden="true" className="h-1 w-1 shrink-0 rounded-full bg-primary transition group-hover:scale-125" />
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ) : (
+          <nav aria-label="Legal & compliance">
+            <h2 className="text-xs font-semibold uppercase text-slate-900">Compliance</h2>
+            <ul className="mt-4 space-y-2.5">
+              {complianceLinks.slice(0, 3).map((link) => (
+                <li key={link.label}>
+                  <Link href={link.href} className="group inline-flex items-center gap-2 text-sm transition hover:text-slate-950">
+                    <span aria-hidden="true" className="h-1 w-1 shrink-0 rounded-full bg-primary transition group-hover:scale-125" />
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
 
         <section aria-labelledby="footer-newsletter-heading">
           <h2 id="footer-newsletter-heading" className="text-xs font-semibold uppercase text-slate-900">
@@ -172,20 +307,26 @@ export function Footer() {
 
       <div className="border-t border-slate-200 bg-slate-50">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-          <p>
-            © 2026 Influencer Dashboard. All rights reserved
-            <Link
-              href="/signup?admin=true"
-              aria-label="Admin sign-in"
-              title="Admin sign-in"
-              className="text-slate-300 transition-colors hover:text-slate-500 focus-visible:rounded-sm focus-visible:text-violet-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500"
-            >
-              .
-            </Link>
-          </p>
-          <nav aria-label="Legal" className="flex items-center gap-4">
-            <Link href="/privacy" className="transition hover:text-slate-900">Privacy Policy</Link>
-            <Link href="/terms" className="transition hover:text-slate-900">Terms</Link>
+          <div className="flex items-center gap-2">
+            <img src="/logo-transparent.png" alt="xCollab Logo" className="h-5 w-auto" />
+            <p>
+              © 2026 xCollab, Inc. All rights reserved
+              <Link
+                href="/signup?admin=true"
+                aria-label="Admin sign-in"
+                title="Admin sign-in"
+                className="text-slate-300 transition-colors hover:text-slate-500 focus-visible:rounded-sm focus-visible:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              >
+                .
+              </Link>
+            </p>
+          </div>
+          <nav aria-label="Legal & compliance" className="flex flex-wrap items-center gap-4">
+            {complianceLinks.map((link) => (
+              <Link key={link.label} href={link.href} className="transition hover:text-slate-900">
+                {link.label}
+              </Link>
+            ))}
           </nav>
         </div>
       </div>
